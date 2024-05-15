@@ -1,7 +1,17 @@
 [package]
-name = "actix-for-trade"
+name = "actix-for-mini"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+actix-cors = "0.7.0"
 actix-web = "4.5.1"
+chrono = { version = "0.4.38", features = ["serde"] }
+derive_more = "0.99.17"
+dotenv_codegen = "0.15.0"
+dotenvy = "0.15.7"
+env_logger = "0.11.3"
+log = "0.4.21"
+mysql = "25.0.0"
+serde = { version = "1.0.201", features = ["derive"] }
+serde_json = "1.0.117"
