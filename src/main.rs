@@ -5,21 +5,25 @@ extern crate derive_more;
 mod env;
 mod models;
 mod mysql;
+mod routes;
 mod traits;
 
-use crate::mysql::fetch_shops;
+use crate::{
+    mysql::common::get_conn_builder,
+    routes::{
+        glasses::{get_glasse_list, post_glasse},
+        shop::get_shop_list,
+    },
+};
 use ::mysql::Pool;
 use actix_cors::Cors;
-use actix_web::{get, http::StatusCode, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{error, get, post, web, App, HttpMessage, HttpResponse, HttpServer, Responder};
 use env::{MYSQL_HOST, MYSQL_PORT, MYSQL_PWD, MYSQL_USER};
-use mysql::get_conn_builder;
 use std::io::Result;
 
 #[get("/")]
-pub(crate) async fn hello(data: web::Data<Pool>) -> actix_web::Result<impl Responder> {
-    let data = web::block(move || fetch_shops(&data)).await??;
-
-    Ok(web::Json(data))
+pub(crate) async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hey there!")
 }
 
 #[post("/echo")]
@@ -53,13 +57,29 @@ async fn main() -> Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::permissive();
+        let json_config = web::JsonConfig::default()
+            .limit(4096)
+            .error_handler(|err, _req| {
+                log::info!("error_handler {:?}", err);
+                println!(
+                    "error_handler {:?} {:?} {:?}",
+                    _req.method(),
+                    _req.app_config(),
+                    _req
+                );
+
+                // create custom error response
+                error::InternalError::from_response(err, HttpResponse::Conflict().finish()).into()
+            });
 
         App::new()
             .wrap(cors)
             .app_data(share_data.clone())
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
+            .app_data(json_config)
+            .service(get_shop_list)
+            .service(get_glasse_list)
+            .service(post_glasse)
+        // .route("/hey", web::get().to(manual_hello))
     })
     .bind(("127.0.0.1", 8080))?
     .run()

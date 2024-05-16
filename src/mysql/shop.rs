@@ -1,8 +1,7 @@
+use crate::models::{common::ApiResult, shop::Shop};
 use actix_web::http::StatusCode;
 use derive_more::{Display, Error, From};
-use mysql::{prelude::*, Pool, PooledConn};
-
-use crate::models::{ApiResult, Shop};
+use mysql::{params, prelude::*, Pool, PooledConn};
 
 #[derive(Debug, Display, Error, From)]
 pub enum PersistenceError {
@@ -33,25 +32,14 @@ impl actix_web::ResponseError for PersistenceError {
     }
 }
 
-pub fn get_conn_builder(
-    user: &str,
-    pwd: &str,
-    host: &str,
-    port: u16,
-    name: &str,
-) -> mysql::OptsBuilder {
-    mysql::OptsBuilder::new()
-        .ip_or_hostname(Some(host))
-        .tcp_port(port)
-        .db_name(Some(name))
-        .user(Some(user))
-        .pass(Some(pwd))
-}
-
-pub fn fetch_shops(pool: &Pool) -> Result<ApiResult<Vec<Shop>>, PersistenceError> {
+pub fn fetch_shops(
+    pool: &Pool,
+    page: u32,
+    size: u32,
+) -> Result<ApiResult<Vec<Shop>>, PersistenceError> {
     let mut conn = pool.get_conn()?;
 
-    let shops = query_shops(&mut conn)?;
+    let shops = query_shops(&mut conn, page, size)?;
 
     Ok(ApiResult {
         code: StatusCode::OK.into(),
@@ -60,23 +48,32 @@ pub fn fetch_shops(pool: &Pool) -> Result<ApiResult<Vec<Shop>>, PersistenceError
     })
 }
 
-pub fn query_shops(conn: &mut PooledConn) -> mysql::error::Result<Vec<Shop>> {
-    conn.query_map(
+pub fn query_shops(conn: &mut PooledConn, page: u32, size: u32) -> mysql::error::Result<Vec<Shop>> {
+    conn.exec_map(
         r"
       SELECT id, name, email, telephone, creator, status, active, create_time, update_time
       FROM wechat_mini_app.shops
       ORDER BY id ASC
+      limit :page,:size
     ",
-        |(id, name, email, telephone, creator, status, active, create_time, update_time)| Shop {
-            id,
-            name,
-            email,
-            telephone,
-            creator,
-            status,
-            active,
-            create_time,
-            update_time,
+        params! {
+            "page" => (page - 1) * size,
+            "size" => size,
+        },
+        |(id, name, email, telephone, creator, status, active, create_time, update_time)| {
+            log::info!("{} {} {:?}", id, name, create_time);
+
+            Shop {
+                id,
+                name,
+                email,
+                telephone,
+                creator,
+                status,
+                active,
+                create_time,
+                update_time,
+            }
         },
     )
 }
