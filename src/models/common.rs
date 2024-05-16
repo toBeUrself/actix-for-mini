@@ -42,8 +42,6 @@ impl FromValue for CustomTimestamp {
     type Intermediate = CustomTimestamp;
 
     fn from_value(v: Value) -> Self {
-        log::info!("datetime {:?}", v);
-
         match v {
             Value::Date(year, month, day, hour, min, sec, ms) => {
                 let res = NaiveDate::from_ymd_opt(year.into(), month.into(), day.into())

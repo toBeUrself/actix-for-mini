@@ -8,7 +8,7 @@ pub(crate) async fn get_shop_list(
     params: web::Query<ShopListForm>,
     data: web::Data<Pool>,
 ) -> actix_web::Result<impl Responder> {
-    log::info!("{:?}", params);
+    log::info!("/shop-list => {:?}", params.0);
 
     let data = web::block(move || fetch_shops(&data, params.page, params.size)).await??;
 

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::common::CustomTimestamp;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct GlassesListForm {
     pub page: u32,
     pub size: u32,
