@@ -1,11 +1,17 @@
 FROM rust:latest
 
-WORKDIR /Users/timliu/rust/actix-for-mini
+WORKDIR /app
+
+RUN pwd
 
 COPY . .
 
-RUN cargo build
+RUN ls -a
+
+RUN cargo build --release
 
 EXPOSE 3000
 
-CMD [".runapp.sh"]
+RUN ls -a
+
+CMD ["./runapp.sh"]

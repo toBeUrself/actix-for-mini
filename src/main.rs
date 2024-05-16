@@ -53,7 +53,7 @@ async fn main() -> Result<()> {
 
     let share_data = web::Data::new(pool);
 
-    log::info!("starting HTTP server at http://localhost:8080");
+    log::info!("starting HTTP server at http://localhost:3000");
 
     HttpServer::new(move || {
         let cors = Cors::permissive();
@@ -81,7 +81,7 @@ async fn main() -> Result<()> {
             .service(post_glasse)
         // .route("/hey", web::get().to(manual_hello))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 3000))?
     .run()
     .await
 }

@@ -61,8 +61,6 @@ pub fn query_shops(conn: &mut PooledConn, page: u32, size: u32) -> mysql::error:
             "size" => size,
         },
         |(id, name, email, telephone, creator, status, active, create_time, update_time)| {
-            log::info!("{} {} {:?}", id, name, create_time);
-
             Shop {
                 id,
                 name,
