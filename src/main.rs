@@ -76,12 +76,13 @@ async fn main() -> Result<()> {
             .wrap(cors)
             .app_data(share_data.clone())
             .app_data(json_config)
+            .service(hello)
             .service(get_shop_list)
             .service(get_glasse_list)
             .service(post_glasse)
         // .route("/hey", web::get().to(manual_hello))
     })
-    .bind(("127.0.0.1", 3000))?
+    .bind(("0.0.0.0", 3000))?
     .run()
     .await
 }
