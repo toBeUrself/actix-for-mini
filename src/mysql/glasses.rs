@@ -1,14 +1,14 @@
-use crate::{apperror::AppError, models::{
-    common::ApiResult,
-    glasses::{Glasse, GlasseInsert, UploadFormData},
-}};
+use crate::{
+    apperror::AppError,
+    models::{
+        common::ApiResult,
+        glasses::{Glasse, GlasseInsert, UploadFormData},
+    },
+};
 use actix_web::http::StatusCode;
 use mysql::{params, prelude::*, Pool, PooledConn};
 
-pub fn insert_glasse(
-    pool: &Pool,
-    glasse: GlasseInsert,
-) -> Result<ApiResult<u64>, AppError> {
+pub fn insert_glasse(pool: &Pool, glasse: GlasseInsert) -> Result<ApiResult<u64>, AppError> {
     let mut conn = pool.get_conn()?;
 
     let res = insert_glasse_sql(&mut conn, glasse)?;
@@ -94,10 +94,7 @@ pub fn query_glasses(
     )
 }
 
-pub fn save_files(
-    conn: &Pool,
-    form: UploadFormData,
-) -> Result<ApiResult<String>, AppError> {
+pub fn save_files(conn: &Pool, form: UploadFormData) -> Result<ApiResult<String>, AppError> {
     for fs in form.files {
         let path = format!("./tmp/{}", fs.file_name.unwrap());
 

@@ -1,3 +1,5 @@
+use std::io;
+
 use actix_web::http::StatusCode;
 use thiserror::Error;
 
@@ -12,18 +14,16 @@ pub enum AppError {
     MysqlError(#[from] mysql::Error),
     #[error("unknown error occurred")]
     Unknown,
+    #[error("I/O error occurred")]
+    IoError(#[from] io::Error),
 }
 
 impl actix_web::ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
         match self {
-            AppError::NotFound => {
-                StatusCode::NOT_FOUND
-            }
-            AppError::InvalidInput => {
-                StatusCode::BAD_REQUEST
-            }
-            AppError::MysqlError(_) | AppError::Unknown => {
+            AppError::NotFound => StatusCode::NOT_FOUND,
+            AppError::InvalidInput => StatusCode::BAD_REQUEST,
+            AppError::IoError(_) | AppError::MysqlError(_) | AppError::Unknown => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
         }

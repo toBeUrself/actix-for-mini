@@ -2,12 +2,12 @@
 extern crate dotenv_codegen;
 extern crate derive_more;
 
+mod apperror;
 mod env;
 mod models;
 mod mysql;
 mod routes;
 mod traits;
-mod apperror;
 
 use crate::{
     mysql::common::get_conn_builder,
