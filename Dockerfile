@@ -14,4 +14,4 @@ EXPOSE 3000
 
 RUN ls -a
 
-CMD ["./runapp.sh"]
+CMD ["./startapp.sh"]
