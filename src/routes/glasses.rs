@@ -1,9 +1,10 @@
+use actix_multipart::form::MultipartForm;
 use actix_web::{get, post, web, Responder};
 use mysql::Pool;
 
 use crate::{
-    models::glasses::{Glasse, GlasseInsert, GlassesListForm},
-    mysql::glasses::{fetch_glasses, insert_glasse},
+    models::glasses::{Glasse, GlasseInsert, GlassesListForm, UploadFormData},
+    mysql::glasses::{fetch_glasses, insert_glasse, save_files},
 };
 
 #[get("/glasse-list")]
@@ -26,6 +27,18 @@ pub(crate) async fn post_glasse(
     log::info!("/insert-glasse => {:?}", glasse.0);
 
     let data = web::block(move || insert_glasse(&data, glasse.0)).await??;
+
+    Ok(web::Json(data))
+}
+
+#[post("/upload-file")]
+pub(crate) async fn upload_file(
+    MultipartForm(form): MultipartForm<UploadFormData>,
+    data: web::Data<Pool>,
+) -> actix_web::Result<impl Responder> {
+    log::info!("/upload-file => {:?}", form);
+
+    let data = web::block(move || save_files(&data, form)).await??;
 
     Ok(web::Json(data))
 }

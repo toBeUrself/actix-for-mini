@@ -1,35 +1,14 @@
-use crate::models::{
+use crate::{apperror::AppError, models::{
     common::ApiResult,
-    glasses::{Glasse, GlasseInsert},
-};
+    glasses::{Glasse, GlasseInsert, UploadFormData},
+}};
 use actix_web::http::StatusCode;
-use derive_more::{Display, Error, From};
 use mysql::{params, prelude::*, Pool, PooledConn};
-
-#[derive(Debug, Display, Error, From)]
-pub enum PersistenceError {
-    EmptyPage,
-    EmptySize,
-    MysqlError(mysql::Error),
-    Unknown,
-}
-
-impl actix_web::ResponseError for PersistenceError {
-    fn status_code(&self) -> StatusCode {
-        match self {
-            PersistenceError::EmptyPage | PersistenceError::EmptySize => StatusCode::BAD_REQUEST,
-
-            PersistenceError::MysqlError(_) | PersistenceError::Unknown => {
-                StatusCode::INTERNAL_SERVER_ERROR
-            }
-        }
-    }
-}
 
 pub fn insert_glasse(
     pool: &Pool,
     glasse: GlasseInsert,
-) -> Result<ApiResult<u64>, PersistenceError> {
+) -> Result<ApiResult<u64>, AppError> {
     let mut conn = pool.get_conn()?;
 
     let res = insert_glasse_sql(&mut conn, glasse)?;
@@ -61,7 +40,7 @@ pub fn fetch_glasses(
     pool: &Pool,
     page: u32,
     size: u32,
-) -> Result<ApiResult<Vec<Glasse>>, PersistenceError> {
+) -> Result<ApiResult<Vec<Glasse>>, AppError> {
     let mut conn = pool.get_conn()?;
 
     let shops = query_glasses(&mut conn, page, size)?;
@@ -80,10 +59,10 @@ pub fn query_glasses(
 ) -> mysql::error::Result<Vec<Glasse>> {
     conn.exec_map(
         r"
-      SELECT id, name, email, type, style, description, img_url, telephone, create_time, update_time, creator
-      FROM wechat_mini_app.glasses
-      ORDER BY id ASC
-      limit :page,:size
+        SELECT id, name, email, type, style, description, img_url, telephone, create_time, update_time, creator
+        FROM wechat_mini_app.glasses
+        ORDER BY id ASC
+        limit :page,:size
     ",
         params! {
             "page" => (page - 1) * size,
@@ -113,4 +92,23 @@ pub fn query_glasses(
             creator,
         },
     )
+}
+
+pub fn save_files(
+    conn: &Pool,
+    form: UploadFormData,
+) -> Result<ApiResult<String>, AppError> {
+    for fs in form.files {
+        let path = format!("./tmp/{}", fs.file_name.unwrap());
+
+        log::info!("saving to {path}");
+
+        fs.file.persist(path).unwrap();
+    }
+
+    Ok(ApiResult {
+        code: StatusCode::OK.into(),
+        data: form.name.to_string(),
+        msg: Some("success".into()),
+    })
 }

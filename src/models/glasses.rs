@@ -1,3 +1,4 @@
+use actix_multipart::form::{tempfile::TempFile, text::Text, MultipartForm};
 use serde::{Deserialize, Serialize};
 
 use super::common::CustomTimestamp;
@@ -35,4 +36,11 @@ pub struct GlasseInsert {
     pub create_time: Option<CustomTimestamp>,
     pub update_time: Option<CustomTimestamp>,
     pub creator: Option<String>,
+}
+
+#[derive(Debug, MultipartForm)]
+pub struct UploadFormData {
+    #[multipart(rename = "file")]
+    pub files: Vec<TempFile>,
+    pub name: Text<String>,
 }

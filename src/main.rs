@@ -7,11 +7,12 @@ mod models;
 mod mysql;
 mod routes;
 mod traits;
+mod apperror;
 
 use crate::{
     mysql::common::get_conn_builder,
     routes::{
-        glasses::{get_glasse_list, post_glasse},
+        glasses::{get_glasse_list, post_glasse, upload_file},
         shop::get_shop_list,
     },
 };
@@ -80,6 +81,7 @@ async fn main() -> Result<()> {
             .service(get_shop_list)
             .service(get_glasse_list)
             .service(post_glasse)
+            .service(upload_file)
         // .route("/hey", web::get().to(manual_hello))
     })
     .bind(("0.0.0.0", 3000))?
