@@ -20,20 +20,56 @@ pub fn insert_glasse(pool: &Pool, glasse: GlasseInsert) -> Result<ApiResult<u64>
     })
 }
 
+pub fn update_glasse(
+    pool: &Pool,
+    glasse: Glasse,
+) -> Result<ApiResult<u64>, AppError> {
+    let mut conn = pool.get_conn()?;
+
+    let res = update_glasse_sql(&mut conn, glasse)?;
+
+    Ok(ApiResult {
+        code: StatusCode::OK.into(),
+        data: res,
+        msg: Some("success".into()),
+    })
+}
+
 pub fn insert_glasse_sql(conn: &mut PooledConn, glasse: GlasseInsert) -> mysql::error::Result<u64> {
     conn.exec_drop(r"
         INSERT INTO wechat_mini_app.glasses (name, email, `type`, style, description, telephone, creator)
         VALUES (:name, :email, :type, :style, :description, :telephone, :creator)
-    ", params! {
+    ",
+    params! {
         "name" => glasse.name,
         "email" => glasse.email,
         "type" => glasse.r#type,
         "style" => glasse.style,
-        "description" => glasse.descriptoin,
+        "description" => glasse.description,
         "telephone" => glasse.telephone,
         "creator" => glasse.creator,
+        },
+    ).map(|_| conn.last_insert_id())
+}
+
+pub fn update_glasse_sql(
+    conn: &mut PooledConn,
+    glasse: Glasse,
+) -> mysql::error::Result<u64> {
+    conn.exec_drop(r"
+        UPDATE wechat_mini_app.glasses SET name = :name, type = :type, style = :style, description = :description
+            WHERE id = :id
+    ",
+    params! {
+        "id" => glasse.id,
+        "name" => glasse.name,
+        "type" => glasse.r#type,
+        "style" => glasse.style,
+        "description" => glasse.description,
     },
-).map(|_| conn.last_insert_id())
+    ).map(|_| {
+        glasse.id
+    })
 }
 
 pub fn fetch_glasses(
@@ -73,7 +109,7 @@ pub fn query_glasses(
             email,
             r#type,
             style,
-            descriptoin,
+            description,
             img_url,
             telephone,
             create_time,
@@ -84,7 +120,7 @@ pub fn query_glasses(
             email,
             r#type,
             style,
-            descriptoin,
+            description,
             img_url,
             telephone,
             create_time,

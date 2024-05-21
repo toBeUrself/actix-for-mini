@@ -16,11 +16,18 @@ pub enum AppError {
     Unknown,
     #[error("I/O error occurred")]
     IoError(#[from] io::Error),
+    #[error("Custom failed with str: {0}")]
+    FailedWithStr(String),
+    #[error("Custom failed with code: {0}")]
+    FailedWithCode(i32),
 }
 
 impl actix_web::ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
         match self {
+            AppError::FailedWithStr(_) | AppError::FailedWithCode(_) => {
+                StatusCode::SERVICE_UNAVAILABLE
+            }
             AppError::NotFound => StatusCode::NOT_FOUND,
             AppError::InvalidInput => StatusCode::BAD_REQUEST,
             AppError::IoError(_) | AppError::MysqlError(_) | AppError::Unknown => {

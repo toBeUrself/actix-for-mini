@@ -12,7 +12,7 @@ mod traits;
 use crate::{
     mysql::common::get_conn_builder,
     routes::{
-        glasses::{get_glasse_list, post_glasse, upload_file},
+        glasses::{get_glasse_list, post_glasse, put_glasse, upload_file},
         shop::get_shop_list,
     },
 };
@@ -40,7 +40,7 @@ async fn manual_hello() -> impl Responder {
 async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    log::info!("initializing database connection");
+    log::info!("initializing database connection => MYSQL_USER: {}, MYSQL_PWD: {}, MYSQL_HOST: {}, MYSQL_PORT: {}", MYSQL_USER, MYSQL_PWD, MYSQL_HOST, MYSQL_PORT);
 
     let opts = get_conn_builder(
         MYSQL_USER,
@@ -82,6 +82,7 @@ async fn main() -> Result<()> {
             .service(get_glasse_list)
             .service(post_glasse)
             .service(upload_file)
+            .service(put_glasse)
         // .route("/hey", web::get().to(manual_hello))
     })
     .bind(("0.0.0.0", 3000))?

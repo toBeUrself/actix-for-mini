@@ -1,4 +1,5 @@
 use actix_multipart::form::{tempfile::TempFile, text::Text, MultipartForm};
+use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
 use super::common::CustomTimestamp;
@@ -16,7 +17,7 @@ pub struct Glasse {
     pub email: Option<String>,
     pub r#type: Option<String>, // type是rust保留字段，要用r#注释
     pub style: Option<String>,
-    pub descriptoin: Option<String>,
+    pub description: Option<String>,
     pub img_url: Option<String>,
     pub telephone: Option<u64>,
     pub create_time: Option<CustomTimestamp>,
@@ -30,7 +31,7 @@ pub struct GlasseInsert {
     pub email: Option<String>,
     pub r#type: Option<String>, // type是rust保留字段，要用r#注释
     pub style: Option<String>,
-    pub descriptoin: Option<String>,
+    pub description: Option<String>,
     pub img_url: Option<String>,
     pub telephone: Option<u64>,
     pub create_time: Option<CustomTimestamp>,
