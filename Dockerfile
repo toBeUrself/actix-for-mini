@@ -20,6 +20,7 @@ WORKDIR /app
 
 COPY . .
 
+# 通过docker网络别名访问数据库
 ENV MYSQL_HOST=mysql-test
 
 RUN cargo build --release
