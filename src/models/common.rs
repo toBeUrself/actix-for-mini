@@ -2,6 +2,7 @@ use actix_web::http::StatusCode;
 use chrono::{DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc};
 use mysql::{prelude::*, FromValueError, Value};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 pub trait Pagination {
     fn get_page(&self) -> u32;
@@ -9,7 +10,7 @@ pub trait Pagination {
     fn get_total(&self) -> u32;
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ApiResult<T> {
     pub code: u16,
     pub data: T,

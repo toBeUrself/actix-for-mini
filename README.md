@@ -14,4 +14,4 @@
 3. ssh 登陆云服务器拉取镜像并跑起来【还有工作没完善】
 
 * 本地热加载启动
-> cargo watch -x run
+> LOG_LEVEL=DEBUG cargo watch -x run

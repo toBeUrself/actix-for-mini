@@ -2,18 +2,20 @@ use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime};
 use mysql::*;
 use mysql::{params, prelude::*};
 use serde::{Deserialize, Serialize, Serializer};
+use utoipa::{IntoParams, ToSchema};
 
+// use actix_web::cookie::time::PrimitiveDateTime; 好像可以从Value::Date转化
 use crate::traits::number::SqlEnum;
 
 use super::common::CustomTimestamp;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, IntoParams)]
 pub struct ShopListForm {
     pub page: u32,
     pub size: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct Shop {
     pub id: u64,
     pub name: String,
