@@ -13,6 +13,7 @@ use super::common::CustomTimestamp;
 pub struct ShopListForm {
     pub page: u32,
     pub size: u32,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -28,7 +29,7 @@ pub struct Shop {
     pub creator: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub enum ShopStatus {
     InOperation,
     Cancelled,
@@ -36,7 +37,7 @@ pub enum ShopStatus {
     Other,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub enum ShopActive {
     InContract,
     UnContract,

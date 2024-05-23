@@ -4,6 +4,8 @@ use mysql::{prelude::*, FromValueError, Value};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
+use super::{glasses::Glasse, shop::Shop};
+
 pub trait Pagination {
     fn get_page(&self) -> u32;
     fn get_size(&self) -> u32;
@@ -11,13 +13,14 @@ pub trait Pagination {
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[aliases(ApiResultWithShop = ApiResult<Vec<Shop>>, ApiResultWithGlasses = ApiResult<Vec<Glasse>>)]
 pub struct ApiResult<T> {
     pub code: u16,
     pub data: T,
     pub msg: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct CustomTimestamp(i64);
 
 impl TryFrom<Value> for CustomTimestamp {

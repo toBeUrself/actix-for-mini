@@ -7,6 +7,19 @@ use crate::{
     mysql::glasses::{fetch_glasses, insert_glasse, save_files, update_glasse},
 };
 
+#[utoipa::path(
+    tag = "获取眼镜列表",
+    context_path = "/rust",
+    params(
+        GlassesListForm
+    ),
+    responses(
+        (status = 200, description = "查询眼镜列表", body = ApiResultWithGlasses) 
+    ),
+    security(
+        ("api_key" = [])
+    ),
+)]
 #[get("/glasse-list")]
 pub(crate) async fn get_glasse_list(
     params: web::Query<GlassesListForm>,
@@ -54,9 +67,6 @@ pub(crate) async fn upload_file(
 }
 
 #[delete("/glasse/{id}")]
-pub(crate) async fn del_glasse(
-    id: web::Path<u64>,
-    data: web::Data<Pool>,
-) -> impl Responder {
+pub(crate) async fn del_glasse(id: web::Path<u64>, data: web::Data<Pool>) -> impl Responder {
     format!("delete glasse where id = {id}!")
 }

@@ -4,17 +4,17 @@ use mysql::Pool;
 use crate::{models::shop::ShopListForm, mysql::shop::fetch_shops};
 
 #[utoipa::path(
+    tag = "获取商家列表",
     context_path = "/rust",
     params(
         ShopListForm
     ),
     responses(
-        (status = 200, description = "查询商家列表", body = ApiResult<Vec<Shop>>) 
+        (status = 200, description = "查询商家列表", body = ApiResultWithShop) 
     ),
     security(
         ("api_key" = [])
     ),
-    tag = "获取商家列表",
 )]
 #[get("/shop-list")]
 pub(crate) async fn shop_list(

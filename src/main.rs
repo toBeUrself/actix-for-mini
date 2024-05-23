@@ -9,22 +9,31 @@ mod mysql;
 mod routes;
 mod traits;
 
+use crate::routes::glasses::__path_get_glasse_list;
+use crate::routes::shop::__path_shop_list;
 use crate::{
-    mysql::common::get_conn_builder, routes::{
+    mysql::common::get_conn_builder,
+    routes::{
         glasses::{del_glasse, get_glasse_list, post_glasse, put_glasse, upload_file},
         shop::shop_list,
-    }
+    },
 };
 use ::mysql::Pool;
 use actix_cors::Cors;
-use actix_web::{error, get, middleware::Logger, post, web, App, HttpMessage, HttpResponse, HttpServer, Responder};
+use actix_web::{
+    error, get, middleware::Logger, post, web, App, HttpMessage, HttpResponse, HttpServer,
+    Responder,
+};
 use env::{MYSQL_HOST, MYSQL_PORT, MYSQL_PWD, MYSQL_USER};
+use std::io::Result;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::{SwaggerUi, Url};
-use std::io::Result;
-use crate::routes::shop::__path_shop_list;
 
-use  models::{common::ApiResult, shop::Shop};
+use crate::models::common::{ApiResultWithGlasses, ApiResultWithShop, CustomTimestamp};
+use models::{
+    glasses::Glasse,
+    shop::{Shop, ShopActive, ShopStatus},
+};
 
 #[get("/")]
 pub(crate) async fn hello() -> impl Responder {
@@ -48,8 +57,8 @@ async fn main() -> Result<()> {
 
     #[derive(OpenApi)]
     #[openapi(
-        paths(shop_list),
-        components(schemas(ApiResult<Vec<Shop>>)),
+        paths(shop_list, get_glasse_list),
+        components(schemas(ApiResultWithShop, ApiResultWithGlasses, Shop, Glasse, ShopActive, ShopStatus, CustomTimestamp)),
         tags(
             (name = "微信小程序服务", description = "with rust")
         )
@@ -102,12 +111,11 @@ async fn main() -> Result<()> {
                     .service(post_glasse)
                     .service(upload_file)
                     .service(put_glasse)
-                    .service(del_glasse)
+                    .service(del_glasse),
             )
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
             )
-            
     })
     .bind(("0.0.0.0", 3000))?
     .run()

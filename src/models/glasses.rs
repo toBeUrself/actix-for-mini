@@ -1,16 +1,17 @@
 use actix_multipart::form::{tempfile::TempFile, text::Text, MultipartForm};
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
+use utoipa::{IntoParams, ToSchema};
 
 use super::common::CustomTimestamp;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, IntoParams)]
 pub struct GlassesListForm {
     pub page: u32,
     pub size: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct Glasse {
     pub id: u64,
     pub name: String,

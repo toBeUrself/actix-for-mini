@@ -20,10 +20,7 @@ pub fn insert_glasse(pool: &Pool, glasse: GlasseInsert) -> Result<ApiResult<u64>
     })
 }
 
-pub fn update_glasse(
-    pool: &Pool,
-    glasse: Glasse,
-) -> Result<ApiResult<u64>, AppError> {
+pub fn update_glasse(pool: &Pool, glasse: Glasse) -> Result<ApiResult<u64>, AppError> {
     let mut conn = pool.get_conn()?;
 
     let res = update_glasse_sql(&mut conn, glasse)?;
@@ -52,10 +49,7 @@ pub fn insert_glasse_sql(conn: &mut PooledConn, glasse: GlasseInsert) -> mysql::
     ).map(|_| conn.last_insert_id())
 }
 
-pub fn update_glasse_sql(
-    conn: &mut PooledConn,
-    glasse: Glasse,
-) -> mysql::error::Result<u64> {
+pub fn update_glasse_sql(conn: &mut PooledConn, glasse: Glasse) -> mysql::error::Result<u64> {
     conn.exec_drop(r"
         UPDATE wechat_mini_app.glasses SET name = :name, type = :type, style = :style, description = :description
             WHERE id = :id
