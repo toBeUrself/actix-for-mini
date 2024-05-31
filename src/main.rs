@@ -40,13 +40,9 @@ pub(crate) async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hey there!")
 }
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
+#[get("/heartbeat")]
+pub(crate) async fn heartbeat() -> impl Responder {
+    HttpResponse::Ok().body("I'm fine!")
 }
 
 #[actix_web::main]
@@ -104,6 +100,7 @@ async fn main() -> Result<()> {
             .app_data(share_data.clone())
             .app_data(json_config)
             .service(hello)
+            .service(heartbeat)
             .service(
                 web::scope("/rust")
                     .service(shop_list)
