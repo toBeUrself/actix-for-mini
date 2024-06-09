@@ -124,9 +124,10 @@ pub fn query_glasses(
     )
 }
 
+const SAVE_DIR: &str = "/root/mini-images";
 pub fn save_files(conn: &Pool, form: UploadFormData) -> Result<ApiResult<String>, AppError> {
     for fs in form.files {
-        let path = format!("./tmp/{}", fs.file_name.unwrap());
+        let path = format!("{}/{}", SAVE_DIR, fs.file_name.unwrap());
 
         log::info!("saving to {path}");
 

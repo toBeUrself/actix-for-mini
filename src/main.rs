@@ -18,13 +18,16 @@ use crate::{
         shop::shop_list,
     },
 };
+use actix_web::web::service;
 use ::mysql::Pool;
+use actix_files as fs;
 use actix_cors::Cors;
 use actix_web::{
     error, get, middleware::Logger, post, web, App, HttpMessage, HttpResponse, HttpServer,
     Responder,
 };
-use env::{MYSQL_HOST, MYSQL_PORT, MYSQL_PWD, MYSQL_USER};
+use env::{MYSQL_HOST, MYSQL_PORT, MYSQL_PWD, MYSQL_USER, SAVE_DIR};
+use routes::file::upload_image;
 use std::io::Result;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::{SwaggerUi, Url};
@@ -102,13 +105,19 @@ async fn main() -> Result<()> {
             .service(hello)
             .service(heartbeat)
             .service(
+                fs::Files::new("/mini-images", SAVE_DIR)
+                    .show_files_listing()
+                    .use_last_modified(true),
+            )
+            .service(
                 web::scope("/rust")
                     .service(shop_list)
                     .service(get_glasse_list)
                     .service(post_glasse)
                     .service(upload_file)
                     .service(put_glasse)
-                    .service(del_glasse),
+                    .service(del_glasse)
+                    .service(upload_image)
             )
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
