@@ -18,7 +18,6 @@ use crate::{
         shop::shop_list,
     },
 };
-use actix_web::web::service;
 use ::mysql::Pool;
 use actix_files as fs;
 use actix_cors::Cors;
@@ -52,7 +51,7 @@ pub(crate) async fn heartbeat() -> impl Responder {
 async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    log::info!("initializing database connection => MYSQL_USER: {}, MYSQL_PWD: {}, MYSQL_HOST: {}, MYSQL_PORT: {}", MYSQL_USER, MYSQL_PWD, MYSQL_HOST, MYSQL_PORT);
+    log::info!("initializing database connection => MYSQL_USER: {}, MYSQL_PWD: {}, MYSQL_HOST: {}, MYSQL_PORT: {}, SAVE_DIR: {}", MYSQL_USER, MYSQL_PWD, MYSQL_HOST, MYSQL_PORT, SAVE_DIR);
 
     #[derive(OpenApi)]
     #[openapi(

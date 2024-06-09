@@ -9,6 +9,16 @@ pub fn save_images(form: UploadImageFormData) -> Result<ApiResult<String>, AppEr
         log::info!("saving to {path}");
 
         fs.file.persist(path).unwrap();
+
+        // let result = fs.file.persist(path);
+
+        // if let Err(err) = result {
+        //   retrun Ok(ApiResult {
+        //     code: err.error.raw_os_error(),
+        //     msg: err.error
+        //   });
+        //   break;
+        // }
     }
 
     Ok(ApiResult {
