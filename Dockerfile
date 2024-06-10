@@ -36,8 +36,9 @@ COPY --from=builder /app/startapp.sh ./startapp.sh
 
 # 创建临时文件目录并映射到宿主机
 RUN mkdir -p /tmp/my-data/mini-images && \
-    chown -R root:root /tmp/my-data/mini-images
-VOLUME /tmp/my-data/mini-images
+    chown -R root:root /tmp/my-data/mini-images  && \
+    chmod -R 755 /tmp/my-data/mini-images
+# VOLUME /tmp/my-data/mini-images
 
 EXPOSE 3000
 

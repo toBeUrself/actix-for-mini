@@ -36,7 +36,7 @@ docker stop containerID
 ```
 3. 用最新镜像起服务
 ```javascript
-docker run -d -p 3000:3000 --name actix-test --net my_testnet imageID
+docker run -d -u root -v /tmp/my-data/mini-images:/tmp/my-data/mini-images -p 3000:3000 --name actix-test --net my_testnet imageID
 ```
 4. 测试服务状态
 ```javascript
