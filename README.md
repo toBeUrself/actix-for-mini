@@ -24,7 +24,7 @@
 docker images // 显示所有镜像
 docker rmi imageID // 删除镜像
 
-docker pull tobeurself111/actix-for-min
+docker pull tobeurself111/actix-for-mini
 ```
 2. 暂停服务容器
 ```javascript
@@ -41,4 +41,6 @@ docker run -d -v /tmp/my-data/mini-images:/tmp/my-data/mini-images -p 3000:3000 
 4. 测试服务状态
 ```javascript
 curl "localhost:3000/rust/shop-list?page=1&size=10"
+
+docker exec -it containerID bash // 进入容器内部
 ```
