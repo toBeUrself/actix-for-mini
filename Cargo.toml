@@ -23,3 +23,4 @@ utoipa = { version = "4.2.3", features = ["actix_extras"] }
 utoipa-swagger-ui = { version = "7.0.3", features = ["actix-web"] }
 utils_type = { path = "./utils_type" }
 actix-files = "0.6.5"
+users = "0.11.0"

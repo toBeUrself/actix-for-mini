@@ -1,4 +1,4 @@
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, os::unix::fs::PermissionsExt};
 
 use actix_web::http::StatusCode;
 
@@ -22,6 +22,11 @@ pub fn save_images(form: UploadImageFormData) -> Result<ApiResult<String>, AppEr
         _ => {
             let path = format!("{}/{}", SAVE_DIR, form.file.file_name.unwrap());
             log::info!("saving to {path}");
+
+            let mut perms = form.file.file.as_file().metadata().unwrap().permissions();
+
+            perms.set_mode(0o644);
+            form.file.file.as_file().set_permissions(perms).unwrap();
 
             form.file.file.persist(path).unwrap();
 

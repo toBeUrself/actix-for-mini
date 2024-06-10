@@ -27,6 +27,8 @@ use actix_web::{
 };
 use env::{MYSQL_HOST, MYSQL_PORT, MYSQL_PWD, MYSQL_USER, SAVE_DIR};
 use routes::file::upload_image;
+use users::{get_current_uid, get_current_username, get_user_by_uid};
+use std::ffi::OsString;
 use std::io::Result;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::{SwaggerUi, Url};
@@ -52,6 +54,13 @@ async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     log::info!("initializing database connection => MYSQL_USER: {}, MYSQL_PWD: {}, MYSQL_HOST: {}, MYSQL_PORT: {}, SAVE_DIR: {}", MYSQL_USER, MYSQL_PWD, MYSQL_HOST, MYSQL_PORT, SAVE_DIR);
+
+    let username = get_current_username().unwrap_or_else(|| OsString::from("unknown"));
+    let uid = get_current_uid();
+    let user = get_user_by_uid(uid).unwrap_or_else(|| panic!("Failed to get user information"));
+    println!("Current user: {:?}", username);
+    println!("User ID: {}", uid);
+    println!("User information: {:?}", user);
 
     #[derive(OpenApi)]
     #[openapi(
